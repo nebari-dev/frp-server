@@ -28,6 +28,8 @@ download_frp() {
   sudo cp /tmp/${download_file_name}/$frp_component $remote_access_dir/$frp_component
   log "Make frp binary executable"
   sudo chmod +x $remote_access_dir/$frp_component
+  # Allow frp to bind to privileged ports
+  sudo setcap CAP_NET_BIND_SERVICE=+ep /opt/remote-access/frps
   log "Cleanup downloads"
   sudo rm /tmp/${download_file_name}.tar.gz
   sudo rm /tmp/${download_file_name} -rf
