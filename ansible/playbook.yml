@@ -6,5 +6,13 @@
         file: vars/users.yaml
         name: accounts
 
+    - name: Include frp settings
+      include_vars:
+        file: vars/frp_config.yaml
+        name: frp_config
+
     - name: Include user ssh keys
       include_tasks: ../ansible/tasks/sync_ssh_keys.yml
+
+    - name: Set up FRP Server
+      include_tasks: ../ansible/tasks/frp_setup.yml

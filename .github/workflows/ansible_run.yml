@@ -5,12 +5,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - ".github/workflows/ansible_run.yml"
-      - "ansible/**"
 
 jobs:
-  ansible:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,3 +36,4 @@ jobs:
           ansible-playbook -i hosts playbook.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
+          FRP_TOKEN: ${{ secrets.FRP_TOKEN }}

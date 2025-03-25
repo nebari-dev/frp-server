@@ -1,0 +1,113 @@
+---
+- name: Set download_file_name
+  set_fact:
+    download_file_name: "frp_{{ frp_config.frp_version }}_{{ frp_config.frp_os }}_{{ frp_config.frp_arch }}"
+
+- name: Create remote access directory
+  file:
+    path: "{{ frp_config.remote_access_dir }}"
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Download FRP release
+  get_url:
+    url: "https://github.com/fatedier/frp/releases/download/v{{ frp_config.frp_version }}/{{ download_file_name }}.tar.gz"
+    dest: "/tmp/{{ download_file_name }}.tar.gz"
+    mode: '0644'
+  become: yes
+
+- name: Extract FRP archive
+  unarchive:
+    src: "/tmp/{{ download_file_name }}.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+  become: yes
+
+- name: Stop FRP service before copying new binary
+  systemd:
+    name: "{{ frp_config.frp_component }}"
+    state: stopped
+  ignore_errors: yes
+  become: yes
+
+- name: Copy FRP binary
+  copy:
+    src: "/tmp/{{ download_file_name }}/{{ frp_config.frp_component }}"
+    dest: "{{ frp_config.remote_access_dir }}/{{ frp_config.frp_component }}"
+    remote_src: yes
+    mode: '0755'
+  become: yes
+
+- name: Set capability on FRP binary to bind to privileged ports
+  capabilities:
+    path: "{{ frp_config.remote_access_dir }}/{{ frp_config.frp_component }}"
+    capability: cap_net_bind_service=+ep
+    state: present
+  become: yes
+
+# Get the FRP token from environment variable
+- name: Get FRP token from environment variable
+  set_fact:
+    frp_token: "{{ lookup('env', 'FRP_TOKEN') }}"
+
+- name: Copy FRP config
+  template:
+    src: "{{ playbook_dir }}/../frp_config/{{ frp_config.frp_component }}.toml"
+    dest: "{{ frp_config.remote_access_dir }}/{{ frp_config.frp_component }}.toml"
+    mode: '0644'
+  vars:
+    token: "{{ frp_token }}"
+  become: yes
+
+- name: Copy systemd service file
+  copy:
+    src: "{{ playbook_dir }}/../frp_config/{{ frp_config.frp_component }}.service"
+    dest: "/etc/systemd/system/{{ frp_config.frp_component }}.service"
+    mode: '0644'
+  become: yes
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: Start and enable FRP service
+  systemd:
+    name: "{{ frp_config.frp_component }}"
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Check FRP service status
+  command: systemctl status {{ frp_config.frp_component }}
+  register: service_status
+  changed_when: false
+  become: yes
+
+- name: Display FRP service status
+  debug:
+    var: service_status.stdout_lines
+
+- name: Wait for 5 seconds
+  pause:
+    seconds: 5
+
+- name: Check FRP service status again
+  command: systemctl status {{ frp_config.frp_component }}
+  register: service_status_after
+  changed_when: false
+  become: yes
+
+- name: Display FRP service status after pause
+  debug:
+    var: service_status_after.stdout_lines
+
+- name: Cleanup downloaded files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/tmp/{{ download_file_name }}.tar.gz"
+    - "/tmp/{{ download_file_name }}"
+  become: yes

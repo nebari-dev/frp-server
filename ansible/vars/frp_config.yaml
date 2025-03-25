@@ -1,0 +1,7 @@
+remote_access_dir: /opt/remote-access
+frp_version: 0.61.2
+frp_os: linux
+frp_arch: amd64
+frp_component: frps
+# Remove the reference to variables in this file
+download_file_name: ""
