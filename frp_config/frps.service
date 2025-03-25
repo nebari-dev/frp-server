@@ -1,0 +1,14 @@
+[Unit]
+Description=frp server - remote access service
+After=network.target
+
+[Service]
+ExecStart=/opt/remote-access/frps -c /opt/remote-access/frps.toml
+WorkingDirectory=/opt/remote-access
+Restart=always
+RestartSec=3
+User=ubuntu
+Group=ubuntu
+
+[Install]
+WantedBy=multi-user.target

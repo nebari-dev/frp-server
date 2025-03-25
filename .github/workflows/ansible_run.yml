@@ -1,0 +1,41 @@
+name: Ansible Tasks
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ansible_run.yml"
+      - "ansible/**"
+
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ed25519 ssh key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SERVER_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+        env:
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Install Ansible
+        run: |
+          sudo apt install software-properties-common
+          sudo apt-add-repository --yes --update ppa:ansible/ansible
+          sudo apt install ansible
+      - name: Install Ansible Dependencies
+        working-directory: ansible
+        run: |
+          ansible-galaxy collection install community.general
+          ansible-galaxy collection install ansible.posix
+      - name: Deploy Ansible Playbook to FRP server
+        working-directory: ansible
+        run: |
+          ansible-playbook -i hosts playbook.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False

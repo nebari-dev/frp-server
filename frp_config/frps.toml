@@ -1,0 +1,10 @@
+bindPort = 7000
+
+auth.method = "token"
+auth.token = "{{ token }}"
+
+tcpmuxHTTPConnectPort = 5002
+
+# Enable HTTP/HTTPS reverse proxy mode
+vhostHTTPPort = 80
+vhostHTTPSPort = 443

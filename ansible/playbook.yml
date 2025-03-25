@@ -1,0 +1,10 @@
+---
+- hosts: frp-server
+  tasks:
+    - name: Include users, groups settings
+      include_vars:
+        file: vars/users.yaml
+        name: accounts
+
+    - name: Include user ssh keys
+      include_tasks: ../ansible/tasks/sync_ssh_keys.yml

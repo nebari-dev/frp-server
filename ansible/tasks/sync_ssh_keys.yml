@@ -1,0 +1,10 @@
+---
+- name: Ensure authorized_keys for GitHub user accounts are present
+  become: true
+  ansible.posix.authorized_key:
+    user: ubuntu
+    key: "https://github.com/{{ item.github_username }}.keys"
+    manage_dir: true
+    exclusive: false
+  with_items: "{{ accounts.enabled_users }}"
+  when: item.github_username is defined
