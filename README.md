@@ -1,5 +1,7 @@
 # Nebari FRP Server for Deployment Previews
 
+[![Ansible Tasks](https://github.com/nebari-dev/frp-server/actions/workflows/ansible_run.yml/badge.svg)](https://github.com/nebari-dev/frp-server/actions/workflows/ansible_run.yml)
+
 This is the infrastructure setup for enabling pull request deployment previews via FRP tunneling.
 This repository contains the necessary configuration to deploy and manage an FRP server on Hetzner,
 facilitating pull request preview environments for Nebari.
