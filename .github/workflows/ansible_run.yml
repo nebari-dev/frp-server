@@ -37,3 +37,4 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
           FRP_TOKEN: ${{ secrets.FRP_TOKEN }}
+          ANSIBLE_FORCE_COLOR: "true"
