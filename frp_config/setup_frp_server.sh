@@ -25,7 +25,7 @@ download_frp() {
   log "Stop $frp_component server, before copying new binary"
   sudo systemctl stop $frp_component || true
   log "Copy frp binary"
-  sudo cp $remote_access_dir/frp_${version}/$frp_component $remote_access_dir/$frp_component
+  sudo cp /tmp/${download_file_name}/$frp_component $remote_access_dir/$frp_component
   log "Make frp binary executable"
   sudo chmod +x $remote_access_dir/$frp_component
   log "Cleanup downloads"
