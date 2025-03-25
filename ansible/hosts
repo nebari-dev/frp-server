@@ -1,2 +1,2 @@
-[frp-server]
+[frp_server]
 frp.nebari.dev ansible_user=ubuntu ansible_port=22

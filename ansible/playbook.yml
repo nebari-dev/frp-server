@@ -1,14 +1,14 @@
 ---
-- hosts: frp-server
+- hosts: frp_server
   tasks:
     - name: Include users, groups settings
       include_vars:
-        file: vars/users.yaml
+        file: vars/users.yml
         name: accounts
 
     - name: Include frp settings
       include_vars:
-        file: vars/frp_config.yaml
+        file: vars/frp_config.yml
         name: frp_config
 
     - name: Include user ssh keys
